@@ -1,84 +1,69 @@
 # App Specification
-<!-- Populate this with your SPEC details. -->
-<!-- Template created with CLAUDE for 15-113-->
 
 ## Overview
-
-<!-- Brief description of the app, its purpose, and target audience. -->
+A mobile countdown app where allows users can create, view, and track upcoming events and review past events.
 
 ## Core Features
-
-<!-- List the main features of the app. -->
-
--
-
-## User Roles
-
-<!-- Define the types of users and their permissions. -->
-
-| Role | Description | Permissions |
-|------|-------------|-------------|
-|      |             |             |
+- Create countdown events with a name, date/time, and description
+- Display all upcoming countdowns from soonest to latest
+- Show live updating countdown timers (days / hours / minutes / seconds)
+- Allow users to edit and delete events
+- Automatically move expired events to a “Past Events” screen
+- Display how long ago past events occurred (e.g., “2 days ago”)
+- Persist data locally on device
 
 ## Screens & Navigation
-
-<!-- Describe the main screens and how users navigate between them. -->
-
-| Screen | Purpose | Navigation |
-|--------|---------|------------|
-|        |         |            |
+- Countdown Screen (home): Displays name and timer for all upcoming countdowns sorted by soonest event
+- Add Screen: Form to create a new countdown with name, date/time, and description
+- Past Events Screen: Displays expired countdowns sorted by most recently passed, showing how long ago they occurred
 
 ## Data Model
 
-<!-- Define the key entities and their relationships. -->
-
 ### Entities
 
-<!-- Example:
-### User
-- id: string
-- email: string
+CountdownEvent (chatGPT helped suggest these)
+- id: string (UUID)
 - name: string
--->
+- description: string (optional)
+- targetDate: string (ISO datetime)
+- createdAt: string (ISO datetime)
+
+Derived Fields (not stored)
+- timeRemaining: computed (targetDate - now)
+- isPast: boolean (targetDate < now)
+- timeSince: computed for past events (now - targetDate)
 
 ## API & Backend
-
-<!-- Describe external APIs, backend services, or Expo API routes used. -->
-
-- **Authentication:**
-- **Database:**
-- **Third-party APIs:**
+- Local storage using AsyncStorage or Expo SecureStore
 
 ## Design & Branding
 
-- **Color palette:**
-- **Typography:**
+- **Color palette:** (chatGPT helped with this too)
+  - Primary: #A78BFA (soft lavender)
+  - Secondary: #F9A8D4 (pastel pink)
+  - Accent 1: #93C5FD (baby blue)
+  - Accent 2: #6EE7B7 (mint green)
+  - Accent 3: #FDE68A (soft yellow)
+  - Background: #FFF7FB (very light pink/cream)
+  - Surface (cards): #FFFFFF
+  - Text Primary: #374151 (soft dark gray)
+  - Text Secondary: #6B7280 (muted gray)
+  - Past Events: #FCA5A5 (soft pastel red)
+ 
 - **Style direction:**
+  - Cute, soft, and elegant with a pastel aesthetic
+  - Card-based UI with rounded corners (12–20px radius)
+  - Cards have gradients and shadows
+  - Decorative sparkles!
+  - Smooth animations
+  - Colour-coded countdown cards (random pastel accent per event)
 
 ## Platform Targets
-
-- [ ] iOS
-- [ ] Android
-- [ ] Web
-
-## Notifications & Background Tasks
-
-<!-- Push notifications, scheduled tasks, background sync, etc. -->
+- iOS
 
 ## Offline Behavior
-
-<!-- How the app should behave without network connectivity. -->
-
-## Analytics & Monitoring
-
-<!-- Tracking events, crash reporting, performance monitoring. -->
+- All data stored locally
+- Countdown timers continue to update
 
 ## Constraints & Non-Goals
-
-<!-- Known limitations, things explicitly out of scope, or technical constraints. -->
-
-## Open Questions
-
-<!-- Unresolved decisions or areas needing further research. -->
-
--
+- Must run in Expo environment and iOS simulator
