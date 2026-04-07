@@ -12,20 +12,29 @@ import { Ionicons } from '@expo/vector-icons';
 import { useEvents, CountdownEvent } from '@/contexts/EventsContext';
 import { Colors } from '@/constants/Colors';
 
+const SECONDS_PER_MINUTE = 60;
+const SECONDS_PER_HOUR = 3600;
+const SECONDS_PER_DAY = 86400;
+
 function getTimeSince(targetDate: string): string {
-  const diff = Math.max(0, Date.now() - new Date(targetDate).getTime());
+  const now = new Date();
+  const past = new Date(targetDate);
+  const diff = Math.max(0, now.getTime() - past.getTime());
   const totalSeconds = Math.floor(diff / 1000);
 
-  if (totalSeconds < 60) return 'just now';
-  const minutes = Math.floor(totalSeconds / 60);
-  if (minutes < 60) return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
-  const hours = Math.floor(minutes / 60);
+  if (totalSeconds < SECONDS_PER_MINUTE) return 'just now';
+  const minutes = Math.floor(totalSeconds / SECONDS_PER_MINUTE);
+  if (minutes < SECONDS_PER_MINUTE) return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
+  const hours = Math.floor(totalSeconds / SECONDS_PER_HOUR);
   if (hours < 24) return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days} day${days !== 1 ? 's' : ''} ago`;
-  const months = Math.floor(days / 30);
+  const days = Math.floor(totalSeconds / SECONDS_PER_DAY);
+  // Use calendar-aware month difference
+  const months =
+    (now.getFullYear() - past.getFullYear()) * 12 +
+    (now.getMonth() - past.getMonth());
+  if (months < 1) return `${days} day${days !== 1 ? 's' : ''} ago`;
   if (months < 12) return `${months} month${months !== 1 ? 's' : ''} ago`;
-  const years = Math.floor(months / 12);
+  const years = now.getFullYear() - past.getFullYear();
   return `${years} year${years !== 1 ? 's' : ''} ago`;
 }
 

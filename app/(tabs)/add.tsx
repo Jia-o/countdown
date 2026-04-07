@@ -81,13 +81,33 @@ export default function AddScreen() {
       Alert.alert('Name required', 'Please enter a name for this event.');
       return;
     }
-    if (targetDate.getTime() <= Date.now() && !isEditing) {
+
+    const isPastDate = targetDate.getTime() <= Date.now();
+
+    if (isPastDate && !isEditing) {
       Alert.alert(
         'Date in the past',
         'The target date must be in the future.'
       );
       return;
     }
+
+    if (isPastDate && isEditing) {
+      Alert.alert(
+        'Date is in the past',
+        'This event will be moved to Past Events. Continue?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Continue', onPress: () => void saveEvent(trimmedName) },
+        ]
+      );
+      return;
+    }
+
+    await saveEvent(trimmedName);
+  };
+
+  const saveEvent = async (trimmedName: string) => {
 
     setSubmitting(true);
     try {
