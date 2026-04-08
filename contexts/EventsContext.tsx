@@ -1,12 +1,12 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {
   createContext,
+  useCallback,
   useContext,
   useEffect,
-  useState,
   useRef,
-  useCallback,
+  useState,
 } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors } from '../constants/Colors';
 
 export interface CountdownEvent {
@@ -33,7 +33,7 @@ const EventsContext = createContext<EventsContextType | undefined>(undefined);
 const STORAGE_KEY = '@countdown_events';
 
 function generateId(): string {
-  return crypto.randomUUID();
+  return Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
 }
 
 function getRandomAccentColor(): string {

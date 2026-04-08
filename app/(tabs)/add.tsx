@@ -1,23 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Alert,
-  Platform,
-  KeyboardAvoidingView,
-} from 'react-native';
+import { Colors } from '@/constants/Colors';
+import { useEvents } from '@/contexts/EventsContext';
+import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
-import { useLocalSearchParams, router } from 'expo-router';
-import { useEvents } from '@/contexts/EventsContext';
-import { Colors } from '@/constants/Colors';
+import { router, useLocalSearchParams } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 export default function AddScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
@@ -129,9 +129,11 @@ export default function AddScreen() {
         });
       }
       // Navigate to past events if the date is in the past, otherwise home
-      router.navigate(isPast ? '/(tabs)/past' : '/(tabs)/');
-    } catch {
-      Alert.alert('Error', 'Failed to save event. Please try again.');
+      router.navigate(isPast ? '/(tabs)/past' : '/(tabs)');
+    } catch (error) {
+      // ADD THIS LOG
+      console.error("Save Error Details:", error);
+      Alert.alert('Error', `Failed to save: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setSubmitting(false);
     }
@@ -317,7 +319,7 @@ export default function AddScreen() {
           {isEditing && (
             <TouchableOpacity
               style={styles.cancelBtn}
-              onPress={() => router.navigate('/(tabs)/')}
+              onPress={() => router.navigate('/(tabs)')}
             >
               <Text style={styles.cancelText}>Cancel</Text>
             </TouchableOpacity>
