@@ -9,10 +9,12 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { useEvents, CountdownEvent } from '@/contexts/EventsContext';
 import { Colors } from '@/constants/Colors';
 
 const SECONDS_PER_MINUTE = 60;
+const MINUTES_PER_HOUR = 60;
 const SECONDS_PER_HOUR = 3600;
 const SECONDS_PER_DAY = 86400;
 
@@ -24,27 +26,42 @@ function getTimeSince(targetDate: string): string {
 
   if (totalSeconds < SECONDS_PER_MINUTE) return 'just now';
   const minutes = Math.floor(totalSeconds / SECONDS_PER_MINUTE);
-  if (minutes < SECONDS_PER_MINUTE) return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
+  if (minutes < MINUTES_PER_HOUR) return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
   const hours = Math.floor(totalSeconds / SECONDS_PER_HOUR);
   if (hours < 24) return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
   const days = Math.floor(totalSeconds / SECONDS_PER_DAY);
-  // Use calendar-aware month difference
-  const months =
+
+  // Calendar-aware month difference: subtract 1 if we haven't reached the
+  // same day-of-month in the current month yet.
+  let months =
     (now.getFullYear() - past.getFullYear()) * 12 +
     (now.getMonth() - past.getMonth());
+  if (now.getDate() < past.getDate()) months -= 1;
+
   if (months < 1) return `${days} day${days !== 1 ? 's' : ''} ago`;
   if (months < 12) return `${months} month${months !== 1 ? 's' : ''} ago`;
-  const years = now.getFullYear() - past.getFullYear();
+
+  // Calendar-aware year difference: subtract 1 if we haven't reached the
+  // same month/day-of-month in the current year yet.
+  let years = now.getFullYear() - past.getFullYear();
+  if (
+    now.getMonth() < past.getMonth() ||
+    (now.getMonth() === past.getMonth() && now.getDate() < past.getDate())
+  ) {
+    years -= 1;
+  }
   return `${years} year${years !== 1 ? 's' : ''} ago`;
 }
 
 function PastEventCard({
   event,
   timeSince,
+  onEdit,
   onDelete,
 }: {
   event: CountdownEvent;
   timeSince: string;
+  onEdit: () => void;
   onDelete: () => void;
 }) {
   const targetDate = new Date(event.targetDate);
@@ -67,13 +84,24 @@ function PastEventCard({
           <Text style={styles.cardTitle} numberOfLines={2}>
             {event.name}
           </Text>
-          <TouchableOpacity
-            onPress={onDelete}
-            style={styles.deleteBtn}
-            hitSlop={8}
-          >
-            <Ionicons name="trash-outline" size={18} color={Colors.textSecondary} />
-          </TouchableOpacity>
+          <View style={styles.cardActions}>
+            <TouchableOpacity
+              onPress={onEdit}
+              style={styles.actionBtn}
+              hitSlop={8}
+              accessibilityLabel="Edit event"
+            >
+              <Ionicons name="pencil-outline" size={18} color={Colors.textSecondary} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={onDelete}
+              style={styles.actionBtn}
+              hitSlop={8}
+              accessibilityLabel="Delete event"
+            >
+              <Ionicons name="trash-outline" size={18} color={Colors.textSecondary} />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {event.description ? (
@@ -112,6 +140,10 @@ export default function PastEventsScreen() {
       (a, b) =>
         new Date(b.targetDate).getTime() - new Date(a.targetDate).getTime()
     );
+
+  const handleEdit = useCallback((event: CountdownEvent) => {
+    router.push({ pathname: '/(tabs)/add', params: { id: event.id } });
+  }, []);
 
   const handleDelete = useCallback(
     (event: CountdownEvent) => {
@@ -160,6 +192,7 @@ export default function PastEventsScreen() {
               key={event.id}
               event={event}
               timeSince={getTimeSince(event.targetDate)}
+              onEdit={() => handleEdit(event)}
               onDelete={() => handleDelete(event)}
             />
           ))
@@ -228,7 +261,11 @@ const styles = StyleSheet.create({
     marginRight: 8,
     letterSpacing: -0.2,
   },
-  deleteBtn: {
+  cardActions: {
+    flexDirection: 'row',
+    gap: 6,
+  },
+  actionBtn: {
     width: 30,
     height: 30,
     borderRadius: 8,

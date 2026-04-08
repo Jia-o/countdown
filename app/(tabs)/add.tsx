@@ -87,7 +87,11 @@ export default function AddScreen() {
     if (isPastDate && !isEditing) {
       Alert.alert(
         'Date in the past',
-        'The target date must be in the future.'
+        'This event date has already passed. It will be added directly to Past Events. Continue?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Continue', onPress: async () => { await saveEvent(trimmedName, true); } },
+        ]
       );
       return;
     }
@@ -98,16 +102,16 @@ export default function AddScreen() {
         'This event will be moved to Past Events. Continue?',
         [
           { text: 'Cancel', style: 'cancel' },
-          { text: 'Continue', onPress: () => void saveEvent(trimmedName) },
+          { text: 'Continue', onPress: async () => { await saveEvent(trimmedName, true); } },
         ]
       );
       return;
     }
 
-    await saveEvent(trimmedName);
+    await saveEvent(trimmedName, false);
   };
 
-  const saveEvent = async (trimmedName: string) => {
+  const saveEvent = async (trimmedName: string, isPast: boolean) => {
 
     setSubmitting(true);
     try {
@@ -124,8 +128,8 @@ export default function AddScreen() {
           targetDate: targetDate.toISOString(),
         });
       }
-      // Navigate to home after save
-      router.navigate('/(tabs)/');
+      // Navigate to past events if the date is in the past, otherwise home
+      router.navigate(isPast ? '/(tabs)/past' : '/(tabs)/');
     } catch {
       Alert.alert('Error', 'Failed to save event. Please try again.');
     } finally {
@@ -220,7 +224,6 @@ export default function AddScreen() {
                   mode="date"
                   display={Platform.OS === 'ios' ? 'spinner' : 'default'}
                   onChange={handleDateChange}
-                  minimumDate={new Date()}
                   textColor={Colors.textPrimary}
                 />
               </View>
