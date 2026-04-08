@@ -1,18 +1,18 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import { CardGradients, Colors } from '@/constants/Colors';
+import { CountdownEvent, useEvents } from '@/contexts/EventsContext';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
   Alert,
   Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import { useEvents, CountdownEvent } from '@/contexts/EventsContext';
-import { Colors, CardGradients } from '@/constants/Colors';
 
 const { width } = Dimensions.get('window');
 
@@ -162,13 +162,13 @@ export default function CountdownScreen() {
         <Text style={styles.headerTitle}>✨ Countdowns</Text>
         <Text style={styles.headerSubtitle}>
           {upcoming.length === 0
-            ? 'No upcoming events'
+            ? 'There are no upcoming events currently'
             : `${upcoming.length} upcoming event${upcoming.length !== 1 ? 's' : ''}`}
         </Text>
       </View>
 
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { justifyContent: 'center', alignItems: 'center' }]}
         showsVerticalScrollIndicator={false}
       >
         {upcoming.length === 0 ? (
@@ -176,7 +176,7 @@ export default function CountdownScreen() {
             <Text style={styles.emptyIcon}>🌸</Text>
             <Text style={styles.emptyTitle}>Nothing yet!</Text>
             <Text style={styles.emptyText}>
-              Tap &quot;Add Event&quot; to create your first countdown
+              Tap &quot;Add Event&quot; to create a countdown
             </Text>
           </View>
         ) : (
@@ -197,6 +197,8 @@ export default function CountdownScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerContainer: {
     paddingTop: 64,
