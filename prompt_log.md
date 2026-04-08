@@ -8,3 +8,6 @@
     - Code quality issues (unclear naming, repeated code, etc.)
     - Best practices for React Native or other technologies
 - Read the REVIEW.md file in this project and make the corrections for the points in the [FAIL] items. Additionally, allow the creation of events that happened in the past and have those events directly go to the past screen.
+
+## Interventions
+- Minor formatting, alignment, and colour changes because I didn't think it was worth using a whole prompt for those
