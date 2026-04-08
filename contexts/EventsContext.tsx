@@ -33,7 +33,7 @@ const EventsContext = createContext<EventsContextType | undefined>(undefined);
 const STORAGE_KEY = '@countdown_events';
 
 function generateId(): string {
-  return Date.now().toString(36) + Math.random().toString(36).substring(2);
+  return crypto.randomUUID();
 }
 
 function getRandomAccentColor(): string {
